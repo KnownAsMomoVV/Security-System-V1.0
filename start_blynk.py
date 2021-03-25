@@ -1,25 +1,36 @@
+#-------------------------------------------------Bibliotheken Importieren-------------------------------------------#
 
 import RPi.GPIO as GPIO
 import time
 import blynklib
 import runpy
 
+#-------------------------------------------------Bibliotheken Importieren (END)-------------------------------------------#
+#----------------------------------------------------------Blynk einbinden---------------------------------------------------#
 
-BLYNK_AUTH = 'pi7uPXSmODTvKsaNvdt7IADPvI9cNF_j' #insert your Auth Token here
+
+BLYNK_AUTH = 'pi7uPXSmODTvKsaNvdt7IADPvI9cNF_j' #Auth Token einfügen
 blynk = blynklib.Blynk(BLYNK_AUTH)
 WRITE_EVENT_PRINT_MSG = "[WRITE_VIRTUAL_PIN_EVENT] Pin: V{} Value: '{}'"
 
-GPIO.setmode (GPIO.BOARD)
-GPIO.setwarnings(False)
+#-------------------------------------------------------Blynk einbinden (END)------------------------------------------------#
 
+#-------------------------------------------------GPIO Konfiguieren-------------------------------------------#
 
+GPIO.setmode (GPIO.BOARD)   # GPIO einstellen und Board Anschlussweise (BCM oder BOARD)
+GPIO.setwarnings(False)     #Warnungen austellen
+
+#-------------------------------------------------GPIO Konfiguieren (END)-------------------------------------------#
+
+#-----------------------------------------BLYNK button eingabe Virtual pins 6-------------------------------------------#
+#------------------------------------------------- Starten der Hauptdatei ---------------------------------------------#
 
 @blynk.handle_event('write V6')
 def write_handler(pin, values):
     result = ""
     header = ''
     delimiter = '{}\n'.format('=' * 30)
-    if values and values[0] == "1234":
+    if values and values[0] == "1234":      #Passwort abfrage
         result = ("Richtiges passwort, starte Hauptdatei \n")
         result2 = ("Haupdatei wird gestartet\n")
     else:
@@ -37,10 +48,13 @@ def write_handler(pin, values):
         print(output2)
         time.sleep(5)
         blynk.virtual_write(pin,sucess)
-        runpy.run_path(path_name='tp_blynk.py')
+        runpy.run_path(path_name='tp_blynk.py') #Starten der (MAIN) Datei
+
+#-------------------------------------------------Starten der Hauptdatei (END)---------------------------------------------#
+#-----------------------------------------BLYNK button eingabe Virtual pin 6 (END)-------------------------------------------#
         
 
+#-------------------------------------------------------Schleife--------------------------------------------------#
 while True:
     blynk.run()
-
-
+#-------------------------------------------------------Schleife (END)--------------------------------------------------#
