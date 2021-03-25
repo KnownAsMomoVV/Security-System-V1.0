@@ -1,12 +1,18 @@
+#-------------------------------------------------Bibliotheken Importieren-------------------------------------------#
+
 import RPi.GPIO as GPIO
 import time
 import blynklib
 import runpy
 import sys
 
-BLYNK_AUTH = 'pi7uPXSmODTvKsaNvdt7IADPvI9cNF_j' #insert your Auth Token here
+#-------------------------------------------------Bibliotheken Importieren (END)-------------------------------------------#
+#----------------------------------------------------------Blynk einbinden---------------------------------------------------#
+BLYNK_AUTH = 'pi7uPXSmODTvKsaNvdt7IADPvI9cNF_j' #Auth Token einfügen
 blynk = blynklib.Blynk(BLYNK_AUTH)
 WRITE_EVENT_PRINT_MSG = "[WRITE_VIRTUAL_PIN_EVENT] Pin: V{} Value: '{}'"
+
+#-------------------------------------------------------Blynk einbinden (END)------------------------------------------------#
 
 # Texte formatieren und schöner gestalten
 result = ""
@@ -14,31 +20,26 @@ header = ''
 delimiter = '{}\n'.format('=' * 30)
 # Texte formatieren und schöner gestalten (END)
 
+
+#-------------------------------------------------GPIO Konfiguieren-------------------------------------------#
+
 ledPin = 3
 Number4 = "Pin_Nummer"
 
-
-#GPIO Konfigurieren
-
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(3,GPIO.OUT) 
+GPIO.setwarnings(False)     # GPIO einstellen und Board Anschlussweise (BCM oder BOARD)
+GPIO.setmode(GPIO.BOARD)    #Warnungen austellen
+GPIO.setup(3,GPIO.OUT)      # Pins Konfigurieren
 GPIO.setup(11,GPIO.IN)
-#GPIO.setup(12,GPIO.IN)
-#GPIO.setup(12,GPIO.OUT)
 GPIO.setup(13,GPIO.OUT)
 GPIO.setup(18,GPIO.OUT)
 GPIO.output(3, GPIO.LOW)
 GPIO.output(13, GPIO.LOW)
 
-#GPIO.output(12,GPIO.HIGH)
-#GPIO.input(12)
+#-------------------------------------------------GPIO Konfiguieren (END)-------------------------------------------#
 
 
-#GPIO Konfigurieren
-#BLYNK button eingabe Virtual pin 4
-#BLYNK button eingabe Virtual pin 4
-
+#-----------------------------------------BLYNK button eingabe Virtual pins 4 & 6-------------------------------------------#
+#-----------------------------------------BLYNK Steuerung für LED Manuell -------------------------------------------#
 @blynk.handle_event('write V4')
 def write_virtual_pin_handler1(pin, value):
 
@@ -53,22 +54,16 @@ def write_virtual_pin_handler1(pin, value):
 
 #BLYNK button eingabe Virtual pin 4
 
-#BLYNK button eingabe Virtual pin 4
-
-@blynk.handle_event('write V5')
-def write_virtual_pin_handler2(pin, value):
-    if value == ["999"]:
-        sys.exit()
+#-----------------------------------------BLYNK Steuerung für LED Manuell (END)-------------------------------------------#
 
 
-#BACK TO START FILE-----------------------------------------------------------------------------------
+#-------------------------------------------------Zurück zur Start datei---------------------------------------------#
 
-#BACK TO START FILE-----------------------------------------------------------------------------------
 
 @blynk.handle_event('write V6')
 def write_handler(pin, values):
 
-  if values and values[0] == "999":
+  if values and values[0] == "999":  #Passwort definieren
     result = values
     result1_5="Richtiges passwort, starte Boot datei \n"
     result2 = "Starte Boot datei\n"
@@ -83,7 +78,7 @@ def write_handler(pin, values):
 
     blynk.virtual_write(pin,usage)
   else:
-    w = ("falsches Password")
+    w = ("falsches Password")   # Nachicht für falsches Passwort
     blynk.virtual_write(pin,w)
     print(w)
   if result:
@@ -97,16 +92,16 @@ def write_handler(pin, values):
     print(output2)
     time.sleep(5)
     blynk.virtual_write(pin,sucess)
-    runpy.run_path(path_name='start_blynk.py')
+    runpy.run_path(path_name='start_blynk.py')  #Starten der (BOOT) Datei
 
 
+#-----------------------------------------BLYNK button eingabe Virtual pin 4 & 6 (END)-------------------------------------------#
 
 
-#BACK TO START FILE-----------------------------------------------------------------------------------
-#BACK TO START FILE-----------------------------------------------------------------------------------
+#-------------------------------------------------Zurück zur Start datei (END)---------------------------------------------#
 
 
-
+#-------------------------------------------------------Schleife--------------------------------------------------#
 while True:
     blynk.run()
 
@@ -123,8 +118,10 @@ while True:
         print ("Bewegung erkannt, sende signal")
         time.sleep(0.5)
         blynk.notify('ALARM AUSGELÖST.')
-        blynk.email("ShiroYasha9@yandex.com",e_txt,txt)
+        blynk.email("ShiroYasha9@yandex.com",e_txt,txt)     #Email senden
         time.sleep(3)
         GPIO.output(3,0)
         GPIO.output(13,0)
+
+#-------------------------------------------------------Schleife (END)--------------------------------------------------#
 
