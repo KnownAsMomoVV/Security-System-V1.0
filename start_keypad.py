@@ -1,7 +1,11 @@
-# Importe von Bibliotheken
+#-------------------------------------------------Bibliotheken Importieren-------------------------------------------#
+
 import RPi.GPIO as GPIO
 import time
 import runpy
+
+#-------------------------------------------------Bibliotheken Importieren (END)-------------------------------------------#
+
 
 # Texte formatieren und schöner gestalten
 psw_abfrage = "Bitte gebe das Passwort ein um die Alarmanlage zu starten: \n"
@@ -23,14 +27,17 @@ wrong = '{}{}{}{}'.format(header, delimiter, wrng, delimiter)
 print (st)
 time.sleep(5)
 
-# GPIO einstellen und Board anschlussweiße einstellen (BCM oder BOARD)
+#-------------------------------------------------GPIO Konfiguieren-------------------------------------------#
+
+# GPIO einstellen und Board Anschlussweise (BCM oder BOARD)
 GPIO.setmode (GPIO.BOARD)
-GPIO.setwarnings(False)
+GPIO.setwarnings(False)         #Warnungen austellen
 
 # GPIO eingänge für das Keypad angeben
+S = [40,38,36,32] # Seule (Pins) für die Vertikalen Buttons
+R = [37,35,33,31] # Reihe (Pins) für die Horizontalen Buttons
 
-S = [40,38,36,32] # Seule
-R = [37,35,33,31] # Reihe
+#-------------------------------------------------GPIO Konfiguieren (END)-------------------------------------------#
 
 for j in range(4): # Hierbe kann man jeden buchstaben verwenden (Jedoch ist j & i das häufigst verwendete)
     GPIO.setup(S[j], GPIO.OUT)
@@ -38,7 +45,7 @@ for j in range(4): # Hierbe kann man jeden buchstaben verwenden (Jedoch ist j & 
 for i in range(4):
     GPIO.setup(R[i], GPIO.IN, pull_up_down = GPIO.PUD_UP)
 
-
+#-----------------------------------------Keypad eingabe erkennen -----------------------------------#
 #Das Überprüfen der eingabe des Keypads
 def check_keypad(length):
     MATRIX = [ [1,4,7,"*"],
@@ -46,7 +53,7 @@ def check_keypad(length):
                [3,6,9,"#"],
                ["A","B","c","D"] ]
     result = ""
-    while(True):
+    while(True):            #Temporäre Schleife
         for j in range(4):
             GPIO.output(S[j], 0)
 
@@ -60,31 +67,35 @@ def check_keypad(length):
             GPIO.output(S[j], 1)
             if len(result) >= length:
                 return result
+#-----------------------------------------Keypad eingabe erkennen (END)------------------------------#
 
-
-#----------------------------SCHLUSSTEIL----------------------------#
 
 # Das password angeben
-password = "A1234"
+password = "A1234"  
 length = len(password)
 
-# Die startnachicht angeben
+# Die Startnachicht angeben
 print(psw_ab)
-result = check_keypad(length)
+result = check_keypad(length)   # Auf länge prüfen
 
 
-# Überprüfen ob das Password korrekt ist
+
+
+#-------------------------------------------------------Schleife--------------------------------------------------#
 
 while True:
-    if result == password:
+    if result == password:      #Passwort abfrage
         print(result)
         print("Korrekt ")
         time.sleep(3)
-        runpy.run_path(path_name='tp_keypad.py')
+        runpy.run_path(path_name='tp_keypad.py')  #Starten der (MAIN) Datei
     else:
         print(result)
         time.sleep(1)
         print(wrong) 
-        runpy.run_path(path_name='start_keypad.py')  
+        runpy.run_path(path_name='start_keypad.py')   #Starten der (BOOT) Datei
+
+#-------------------------------------------------------Schleife (END)--------------------------------------------------#
+
 
 #------------------------------ENDE-------------------------------#
